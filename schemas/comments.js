@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const commentsSchema = new mongoose.Schema({
   
@@ -14,9 +15,7 @@ const commentsSchema = new mongoose.Schema({
     type: String,
     requierd:true
   },
-  postId: { 
-    type: Schema.Types.ObjectId, ref: "posts" 
-  },
+  postId: { type: Schema.Types.ObjectId, ref: "posts"},
 },
 {timestamps:true}
 );
