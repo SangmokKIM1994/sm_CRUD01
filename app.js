@@ -6,10 +6,13 @@ const postRouter = require('./routes/posts.js');
 const commentRouter = require("./routes/comments.js")
 
 const connect = require("./schemas/index.js");
-connect();
 
 app.use(express.json());
-app.use("/api", [postRouter, commentRouter]);
+connect();
+
+
+app.use("/posts", [postRouter]);
+app.use("/comments", [commentRouter])
 
 app.listen(port, () => {
     console.log(port, '포트로 서버가 열렸어요!');

@@ -1,28 +1,73 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/posts", (req,res) => {
-    res.json({posts: posts});
-  })
+const posts = require("../schemas/posts.js");
 
-  router.get("/posts/:postId", (req,res) => {
-    const {postId} = req.params;
-    const [detail] = goods.filter((posts)=> posts.postId === Number(postId));
-    res.json({detail})
-  })
+router.post("/", async (req, res) => {
+  
+	const {user,password,title,content } = req.body;
 
-router.post("/posts", async (req, res) => {
-	const { postId, user, password, title, content } = req.body;
+  await posts.create({ user, password, title, content });
 
-  const posts = await Goods.find({ postId });
-  if (posts.length) {
-    return res.status(400).json({ success: false, 
-        errorMessage: "이미 있는 ID입니다." });
+  res.json({"message": "게시글을 생성하였습니다." });
+});
+
+router.get("/", async (req,res) => {
+  const callAll = await posts.find({});
+  
+  const list = [];
+
+  for (let i=0; i < callAll.length; i++){
+    const post = {
+      postId: callAll[i]._id,
+      user: callAll[i].user,
+      content: callAll[i].content,
+      createdAt: callAll[i].createdAt,
+    }
+    list.push(post)
   }
 
-  const createdPosts = await Goods.create({ postId, user, password, title, content });
+  res.json({date : [...list]})
+})
 
-  res.json({ posts: createdPosts });
+router.get("/:_postId", async (req, res) => {
+  const { _postId } = req.params;
+  const callOne = await posts.findById(_postId);
+  const temp = {
+    postId: callOne._id,
+    user: callOne.user,
+    title: callOne.title,
+    content: callOne.content,
+    createdAt: callOne.createdAt,
+  };
+  res.json({ data: [temp] });
 });
+
+router.put("/:_postId", async (req, res) => {
+  const { _postId } = req.params;
+  const selectId = await posts.findById(_postId);
+  if (selectId) {
+    await posts.findOneAndUpdate(
+      { _postId: req.params },
+      {
+        password: req.body.password,
+        title: req.body.title,
+        content: req.body.content,
+      }
+    );
+    res.json({ message: "게시글을 수정하였습니다." });
+  }
+});
+
+router.delete("/:_postId", async (req,res) => {
+  const {_postId} = req.params;
+  const {password} = req.body;
+  const delOne = await posts.findById(_postId);
+  if(delOne.password=== password){
+    await posts.deleteOne({_id: _postId});
+    res.json({message: "게시글을 삭제하였습니다."});
+  }
+})
+
 
 module.exports = router;
