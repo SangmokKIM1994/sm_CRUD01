@@ -32,18 +32,19 @@ router.get("/:_postId", async (req,res) => {
 })
 
 router.put("/:_commentId", async (req, res) => {
-  const { _commentId } = req.params;
-  const selectId = await comments.findById(_commentId);
-  if (selectId) {
+  const {password,content} = req.body;
     await comments.findOneAndUpdate(
-      { _commentId: req.params },
+      req.params._commentId,
       {
-        password: req.body.password,
-        content: req.body.content,
+        password: password,
+        content: content,
+      },
+      {
+        new: true,
       }
     );
     res.json({ message: "댓글을 수정하였습니다." });
-  }
+  
 });
 
 router.delete("/:_commentId", async (req,res) => {

@@ -1,11 +1,14 @@
 const mongoose = require("mongoose");
-mongoose.set('strictQuery',true)
-
-require('dotenv').config();
+mongoose.set('strictQuery',false)
+const dotenv = require('dotenv');
+dotenv.config();
+const {mongoDb} = process.env
 
 const connect = () => {
     mongoose
-    .connect(process.env.mongoDb)
+    .connect(mongoDb,{useNewUrlParser: true,
+                     useUnifiedTopology: true,})
+    .then(()=>console.log('몽고디비 연결'))
     .catch(err => console.log(err));
 };
 

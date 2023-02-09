@@ -44,19 +44,19 @@ router.get("/:_postId", async (req, res) => {
 });
 
 router.put("/:_postId", async (req, res) => {
-  const { _postId } = req.params;
-  const selectId = await posts.findById(_postId);
-  if (selectId) {
+  const {password,title,content} = req.body;
     await posts.findOneAndUpdate(
-      { _postId: req.params },
+      req.params._postId,
       {
-        password: req.body.password,
-        title: req.body.title,
-        content: req.body.content,
+        password: password,
+        title: title,
+        content: content,
+      },
+      {
+        new: true,
       }
     );
     res.json({ message: "게시글을 수정하였습니다." });
-  }
 });
 
 router.delete("/:_postId", async (req,res) => {
