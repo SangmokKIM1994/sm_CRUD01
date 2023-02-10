@@ -28,7 +28,7 @@ router.get("/:_postId", async (req,res) => {
         list.push(comment)
     }
 
-    res.json({date : [...list]})
+    res.json({date : list})
 })
 
 router.put("/:_commentId", async (req, res) => {
