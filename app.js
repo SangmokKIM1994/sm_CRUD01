@@ -5,7 +5,7 @@ const port = 3000;
 
 const postRouter = require('./routes/posts.js');
 const commentRouter = require("./routes/comments.js");
-const signupRouter = require("./routes/user.js");
+const signupRouter = require("./routes/signup.js");
 const loginRouter = require("./routes/login.js")
 
 const connect = require("./schemas/index.js");
