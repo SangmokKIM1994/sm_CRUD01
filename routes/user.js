@@ -7,6 +7,8 @@ const UserSchema = require("../schemas/user.js") //스키마를 들고 왔어야
 router.post("/", async (req, res) => {
     const {nickname, password, confirm} = req.body;
     const findNickname = await UserSchema.findOne({nickname});
+    const passwordInNickname = await password.includes(nickname)
+    const nicknameCheck = await nickname.match(/[^0-9a-zA-Z]/g)
 
     if(password !== confirm){ 
         res.status(412).json({errorMessage : "비밀번호 확인이 일치하지 않습니다.",})
@@ -16,6 +18,18 @@ router.post("/", async (req, res) => {
         res.status(412).json({errorMessage : "중복된 닉네임 입니다.",})
         return
     };
+    if(nickname.length < 3 || nicknameCheck){
+        res.status(412).json({errorMessage : "닉네임 형식이 일치하지 않습니다.",})
+        return
+    }
+    if(password.length < 4){
+        res.status(412).json({errorMessage : "패스워드 형식이 일치하지 않습니다.",})
+        return
+    }
+    if(passwordInNickname){
+        res.status(412).json({errorMessage : "패스워드에 닉네임이 포함되어 있습니다.",})
+        return
+    }
 
     const user = new UserSchema({nickname,password});
     await user.save();
