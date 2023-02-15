@@ -2,11 +2,7 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
   
-  user: {
-    type: String,
-    requierd:true
-  },
-  password: {
+  nickname: {
     type: String,
     requierd:true
   },
@@ -18,6 +14,14 @@ const postSchema = new mongoose.Schema({
     type: String,
     requierd:true
   },
+  postId: {
+    type:Number,
+    requierd:true
+  },
+  userId: {
+    type:Number,
+    requierd:true
+  }
 },
 {timestamps:true}
 );

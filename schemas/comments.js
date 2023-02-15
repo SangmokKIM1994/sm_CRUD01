@@ -2,20 +2,26 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const commentsSchema = new mongoose.Schema({
-  
-  user: {
+  commentsId: {
+    type: Number,
+    requierd:true
+  },
+  postId: {
+    type: Number,
+    requierd:true
+  },
+  userId: {
+    type: Number,
+    requierd:true
+  },
+  nickname: {
     type: String,
     requierd:true
   },
-  password: {
+  comment: {
     type: String,
     requierd:true
   },
-  content: {
-    type: String,
-    requierd:true
-  },
-  postId: { type: Schema.Types.ObjectId, ref: "posts"},
 },
 {timestamps:true}
 );
