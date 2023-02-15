@@ -1,60 +1,68 @@
     const express = require("express");
     const router = express.Router();
-
     const comments = require("../schemas/comments.js");
+    const posts = require("../schemas/posts")
+    const authMiddleware = require("../middleware/login_middleware.js");
 
-router.post("/:_postId", async (req, res) => {
-    const {_postId} = req.params;
-    const {user,password,content } = req.body;
+router.post("/:postId/comments",authMiddleware, async (req, res) => {
+    const {nickname} = res.locals.user;
+    const {postId} = req.params;
+    const {comment} = req.body;
+    const findPost = await posts.findOne({postId})
+    const {userId} = findPost;
+    const findMaxCommentsId = await comments.findOne({postId}).sort("-commentsId").exec();
+    const commentsId = findMaxCommentsId ? findMaxCommentsId.commentsId +1 : 1;
 
-    await comments.create({ postId: _postId, user, password, content });
+    await comments.create({
+      commentsId,
+      postId,
+      userId,
+      nickname,
+      comment
+    })
 
     res.json({"message": "댓글을 생성하였습니다." });
 });
 
-router.get("/:_postId", async (req,res) => {
-    const {_postId} = req.params
-    const callAll = await comments.find({postId:_postId});
-  
-    const list = [];
+router.get("/:postId/comments", async (req,res) => {
+    const {postId} = req.params
+    const com = await comments.find({postId}).sort("-commentsId")
+    const commentsList = com.map((list) => {
+      return {
+        "commentsId" : list.commentsId,
+        "postId" : list.postId,
+        "nickname" : list.nickname,
+        "comment" : list.comment,
+        "createdAt" : list.createdAt,
+        "updatedAt" : list.updatedAt,
+      }
+    })
 
-    for (let i=0; i < callAll.length; i++){
-        const comment = {
-        commentId: callAll[i]._id,
-        user: callAll[i].user,
-        content: callAll[i].content,
-        createdAt: callAll[i].createdAt,
-        }
-        list.push(comment)
-    }
-
-    res.json({date : list})
+    res.json({date : commentsList})
 })
 
-router.put("/:_commentId", async (req, res) => {
-  const {password,content} = req.body;
-    await comments.findOneAndUpdate(
-      req.params._commentId,
-      {
-        password: password,
-        content: content,
-      },
-      {
-        new: true,
-      }
-    );
-    res.json({ message: "댓글을 수정하였습니다." });
+router.put("/:postId/comments/:commentsId",authMiddleware, async (req, res) => {
+  const {userId} = res.locals.user;
+  const {postId, commentsId} = req.params;
+  const {comment} = req.body;
+  const findComment = await comments.findOne({commentsId, postId});
+  console.log(findComment)
+  // if(findComment.length){
+  //   await comments.updateOne(
+  //           {userId, postId, commentsId},
+  //           {$set:{comment:comment}},
+  //       )
+  // }
+  findComment.comment = comment
+  await findComment.save()
+  res.json({ message: "댓글을 수정하였습니다." });
   
 });
 
-router.delete("/:_commentId", async (req,res) => {
-  const {_commentId} = req.params;
-  const {password} = req.body;
-  const delOne = await comments.findById(_commentId);
-  if(delOne.password=== password){
-    await comments.deleteOne({_id: _commentId});
-    res.json({message: "댓글을 삭제하였습니다."});
-  }
+router.delete("/:postId/comments/:commentsId",authMiddleware, async (req,res) => {
+  const {postId, commentsId} = req.params;
+  await comments.deleteOne({postId, commentsId});
+  res.json({message: "댓글을 삭제하였습니다."});
 })
 
 

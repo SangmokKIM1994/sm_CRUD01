@@ -18,8 +18,7 @@ app.use(cookieParser());
 
 app.use("/signup",[signupRouter]);
 app.use("/login",[loginRouter]);
-app.use("/posts", [postRouter]);
-app.use("/comments", [commentRouter])
+app.use("/posts", [postRouter,commentRouter]);
 
 app.listen(port, () => {
     console.log(port, '포트로 서버가 열렸어요!');

@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
     },
 });
 
-UserSchema.virtual("userId").get(function () {
+UserSchema.virtual("Id").get(function () {
     return this._id.toHexString();
 });
 
